@@ -49,7 +49,7 @@ const guessType = (restaurant, title, description) => {
   }
   return Object.entries(model).reduce((acc, [key, pattern]) => {
     const regexp = new RegExp(pattern, 'i')
-    if (title.match(regexp) || restaurant.match(regexp) || description.match(regexp)) {
+    if (title.match(regexp) || description.match(regexp)) {
       return acc.concat(key)
     } else {
       return acc
