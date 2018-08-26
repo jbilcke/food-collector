@@ -5,6 +5,13 @@ const readFile = promisify(fs.readFile)
 const writeFile = promisify(fs.writeFile)
 
 const guessType = (restaurant, title, description) => {
+
+  // here we try to get the restaurant name and not the area
+  const cleanRestaurant = restaurant.toLowerCase().split(' - ')[0]
+  
+  // here we try to remove the restaurant name from the description eg 'BIOBURGER'
+  const cleanDescription = description.toLowerCase().replace(cleanRestaurant, '')
+
   const model = {
     kebab: 'sandwich kebab|sandiwch grec',
     biryani: 'biryani',
@@ -49,7 +56,7 @@ const guessType = (restaurant, title, description) => {
   }
   return Object.entries(model).reduce((acc, [key, pattern]) => {
     const regexp = new RegExp(pattern, 'i')
-    if (title.match(regexp) || description.match(regexp)) {
+    if (title.match(regexp) || cleanDescription.match(regexp)) {
       return acc.concat(key)
     } else {
       return acc
