@@ -4,31 +4,52 @@ const readDir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)
 const writeFile = promisify(fs.writeFile)
 
-const guessType = (title, description) => {
+const guessType = (restaurant, title, description) => {
   const model = {
+    kebab: 'sandwich kebab|sandiwch grec',
+    biryani: 'biryani',
     burger: '(?:hamb|cheese)?burg(?:é|er)',
+    hotdog: 'hotdog|hot dog',
+    friedchicken: 'poulet pané frit|fried chicken',
     pizza: 'pizza',
     bobun: '(?:bobun|bo bun|bun bo|bòbún|bò bún|bún bò nam bộ|bún bò|bún thịt nướng bò)',
     pasta: 'pâtes|pates|pasta|spaghetti|linguine|orechiette|tagliolini',
     risotto: 'risotto',
+    acaibowl: 'a(?:c|ç)ai bowl',
+    noodles: 'noodles|nouilles',
     ceviche: 'ceviche',
     chirashi: 'chirashi',
     donburi: 'donburi',
+    bibimbap: 'bibimbap',
+    burrito: 'burrito',
+    'taco': 'tacos?',
+    avocadotoast: 'avocado toast|tartine d\'avocat|tartine à l\'avocat',
+    naan: 'naan',
+    nachos: 'nachos',
+    fries: 'fries side|side fries|grandes? frites?|moyennes? frites?|petites? frites?|barquette de frites?',
+    gingerbeer: 'ginger ?beer',
+    beer: 'brooklyn lager|demory|duvel|heineken|kronenbourg|asahi|kirin|tsing ?tao|hoegaarden|1664|bière|beer|peroni|budweiser|gallia|corona|bud light|carlsberg|singha|moretti|la goule|goudale|skumenn|bap ?bap|donovan',
+    milkshake: 'milkshake',
+    wine: 'vin en pichet|pichet de vin|vin blanc|vin rouge|vin rosé|bordeaux|pinot|chardonnay|rosé de provence|chablis',
+    champagne: 'champagne',
+    coke: 'coca(?: |-)?cola|breizh cola|pepsi cola|coca|cola|pepsi|coke',
+    sparklingwater: 'badoit|san pellegrino|perrier',
+    drink: 'schweppes|fanta|tropico|limonade|citronnade|dr pepper|7 ?up|oasis|orangina|sprite|ice ?tea|jarrito|lassi',
+    water: 'cristaline|evian|vittel',
+    croissant: 'croissant',
+    chocolatine: 'chocolatine|pain au chocolat',
+    pastry: 'gauffre|beignets?|chouquettes?|cookies?|éclair au chocolat|pain au raisin|pain suisse',
+    dessert: 'mousse au chocolat|tiramisu|pann?a ?cott?a',
+    cake: 'cheesecake|carrotcake|cake|fraisier|forêt noire',
+    crepe: 'cr(?:ê|è|e)pe|froment|blé noir',
     pokebowl: 'pok(?:e|é)\s?bowl',
     sandwich: 'sandwich(?:es)?',
     bagel: 'bagels?',
     salad: 'salade?',
-    burrito: 'burrito',
-    'taco': 'tacos?',
-    side: 'naan|nachos|chips|barquette de frites',
-    alcohol: 'bière|beer|vin blanc|vin rouge|vin rosé|champagne|bordeaux',
-    drink: '7up|san pellegrino|perrier|coca|cola|coca-cola|vittel|oasis|orangina|sprite|ice tea|jarrito',
-    dessert: 'beignets?|chouquettes?|cookies?|cheesecake|carrotcake|cake|mousse au chocolat|chocolat|tiramisu|pannacota',
-    crepe: 'cr(?:ê|è|e)pe|froment|blé noir',
   }
   return Object.entries(model).reduce((acc, [key, pattern]) => {
     const regexp = new RegExp(pattern, 'i')
-    if (title.match(regexp) || description.match(regexp)) {
+    if (title.match(regexp) || restaurant.match(regexp) || description.match(regexp)) {
       return acc.concat(key)
     } else {
       return acc
@@ -60,7 +81,7 @@ async function parseDirectory (directory) {
         db[`${restaurant} >> ${item.title}`] = {
           // id: item.title,
           restaurant: restaurant,
-          type: guessType(item.title, item.itemDescription)[0],
+          type: guessType(restaurant, item.title, item.itemDescription)[0],
           price: (item.price / 100).toString().replace('.', ','),
           name: item.title,
           description: item.itemDescription,
