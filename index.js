@@ -106,4 +106,4 @@ async function parseDirectory (directory) {
     )
   })
 }
-parseDirectory('./data/').catch(console.error)
+parseDirectory('./data/paris/').catch(console.error)
